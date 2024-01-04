@@ -36,6 +36,9 @@ RUN adduser \
     "${USER}"
 
 COPY --from=builder --chown=appuser:appuser /app/deploy/dd-integration-test .
+COPY --from=builder --chown=appuser:appuser /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+COPY --from=datadog/serverless-init /datadog-init /app/datadog-init
 
 RUN apk update && apk upgrade
 RUN apk add curl bash-completion
@@ -44,4 +47,5 @@ STOPSIGNAL SIGINT
 
 EXPOSE 8080
 
-ENTRYPOINT ["./dd-integration-test"]
+ENTRYPOINT ["/app/datadog-init"]
+CMD ["/app/dd-integration-test"]
