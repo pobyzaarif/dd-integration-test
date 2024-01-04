@@ -6,9 +6,17 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
 func main() {
+	tracer.Start(
+		tracer.WithEnv("env-local-dev"),
+		tracer.WithService("dd-integration-test"),
+	)
+
+	defer tracer.Stop()
+
 	// Create a new Echo instance
 	e := echo.New()
 

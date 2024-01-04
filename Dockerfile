@@ -19,33 +19,23 @@ RUN GO111MODULE=on \
     -o deploy/dd-integration-test \
     ./main.go
 
-FROM alpine:3.18.4
+FROM debian:stable-slim
 
 WORKDIR /app
-ENV USER=appuser
-ENV UID=10001
-ENV TZ=Asia/Jakarta
 
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    "${USER}"
+RUN apt-get update
+RUN apt-get install -y ca-certificates \
+        nano \
+        bash-completion \
+        iproute2 \
+        procps \
 
-COPY --from=builder --chown=appuser:appuser /app/deploy/dd-integration-test .
-COPY --from=builder --chown=appuser:appuser /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=builder /app/deploy/dd-integration-test .
 
-COPY --from=datadog/serverless-init /datadog-init /app/datadog-init
-
-RUN apk update && apk upgrade
-RUN apk add curl bash-completion
+COPY --from=datadog/serverless-init /datadog-init .
 
 STOPSIGNAL SIGINT
 
 EXPOSE 8080
 
-ENTRYPOINT ["/app/datadog-init"]
-CMD ["/app/dd-integration-test"]
+CMD ["./datadog-init", "./dd-integration-test"]
