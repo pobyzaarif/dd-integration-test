@@ -28,7 +28,7 @@ RUN apt-get install -y ca-certificates \
         nano \
         bash-completion \
         iproute2 \
-        procps \
+        procps
 
 COPY --from=builder /app/deploy/dd-integration-test .
 
