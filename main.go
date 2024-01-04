@@ -5,11 +5,21 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
 	// Create a new Echo instance
 	e := echo.New()
+
+	e.Use(
+		middleware.Logger(),
+		middleware.Recover(),
+	)
+
+	e.GET("/", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]interface{}{"message": "dd-integration-test"})
+	})
 
 	e.GET("/api/v1/:code", func(c echo.Context) error {
 		reqCodeStr := c.Param("code")
