@@ -6,6 +6,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	ddEcho "gopkg.in/DataDog/dd-trace-go.v1/contrib/labstack/echo.v4"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
 )
 
@@ -23,6 +24,7 @@ func main() {
 	e.Use(
 		middleware.Logger(),
 		middleware.Recover(),
+		ddEcho.Middleware(),
 	)
 
 	e.GET("/", func(c echo.Context) error {
